@@ -1,0 +1,70 @@
+<project basedir="." name="RUN-ALL" default="compile">
+    <description>
+        Running Test Build
+    </description>
+
+    <property name="buildDir" value="build"/>
+    <property name="doc.dir" value="${buildDir}/doc"/>
+    <property name="VERSION" value="1.1."/>
+    <buildnumber file="mybuild.number"/>
+
+    <target name="clean">
+        <echo message="Starting clean..."/>
+        <delete dir="${buildDir}"/>
+    </target>
+
+    <target name="init" depends="clean">
+        <echo message="Starting init..."/>
+        <mkdir dir="${buildDir}/classes"/>
+        <mkdir dir="${buildDir}/jar"/>
+        <mkdir dir="${buildDir}/Hello"/>
+        <mkdir dir="${buildDir}/web"/>
+    </target>
+
+    <target name="compile" depends="init">
+        <echo message="Starting compile..."/>
+        <javac srcdir="src" destdir="build/classes" includeantruntime="false"/>
+    </target>
+
+    <!-- creata javaDoc for package inside build folder. Store javadoc in folder doc -->
+    <target name="doc" depends="compile">
+        <javadoc sourcepath="src" destdir="${doc.dir}">
+        <doctitle>
+            <![CDATA[<h1>Ant Build</h1>]]>
+        </doctitle>
+        <bottom>
+            <![CDATA[Copyright © Alfredo Vitale.<br/> <b>Please contact Alfredo Vitale in case of questions</b>]]>
+        </bottom>
+        </javadoc>
+    </target>
+
+    <target name="createFile" depends="doc">
+        <echo message="Starting creating..."/>
+        <echo file="${buildDir}/Hello/hello.txt" append="false">On January we are going to start our challenge</echo>
+
+    </target>
+    <target name="get" depends="createFile">
+        <echo message="Starting get..."/>
+        <get src="https://ant.apache.org/index.html" dest="${buildDir}/web/index.html"/>
+        <get dest="build/downloads">
+            <url url="https://png.pngtree.com/png-clipart/20200701/original/pngtree-cute-ant-cartoon-illustration-png-image_5358274.jpg"/>
+            <url url="https://png.pngtree.com/png-clipart/20201209/original/pngtree-cute-cartoon-style-ant-clipart-png-image_5672157.jpg"/>
+        </get>
+    </target>
+
+    <target name="jar" depends="get">
+        <echo message="Starting jar..."/>
+        <jar destfile="${buildDir}/jar/TestantClass${VERSION}${build.number}.jar" basedir="${buildDir}/classes">
+            <manifest>
+                <attribute name="Main-Class" value="testant.TestantClass"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="run" depends="jar">
+        <echo message="Starting run..."/>
+        <java jar="${buildDir}/jar/TestantClass${VERSION}${build.number}.jar" fork="true"/>
+    </target>
+
+
+</project>
